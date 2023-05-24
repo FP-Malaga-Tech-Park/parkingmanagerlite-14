@@ -24,3 +24,21 @@ Característica: Gestion de usuarios
     Y el usuario hace click sobre el botón de crear usuario
     Entonces esta en la pagina de lista de usuarios
     Y se ha persistido el usuario en la base de datos
+
+  Escenario: No se crea el usuario
+    Dado un usuario esta en la pagina de creación de usuarios
+    Cuando relleno el campo nombre con Angel
+    Y relleno el campo primer apellido con Linero
+    Entonces no se ha persistido el usuario en la base de datos
+
+  Escenario: No rellenar nombre
+    Dado un usuario esta en la pagina de creación de usuarios
+    Cuando relleno el campo primer apellido con Linero
+    Y relleno el campo correo electrónico con usuario@correo.com
+    Entonces no se ha persistido el usuario en la base de datos
+
+  Escenario: No rellenar apellido
+    Dado un usuario esta en la pagina de creación de usuarios
+    Cuando relleno el campo nombre con Angel
+    Y relleno el campo correo electrónico con usuario@correo.com
+    Entonces no se ha persistido el usuario en la base de datos
