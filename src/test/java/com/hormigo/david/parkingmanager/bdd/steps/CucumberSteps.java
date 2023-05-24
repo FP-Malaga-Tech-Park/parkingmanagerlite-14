@@ -22,6 +22,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import com.hormigo.david.parkingmanager.bdd.CucumberConfiguration;
+import com.hormigo.david.parkingmanager.draw.domain.Draw;
+import com.hormigo.david.parkingmanager.draw.domain.DrawRepository;
+import com.hormigo.david.parkingmanager.draw.service.DrawService;
 import com.hormigo.david.parkingmanager.user.domain.Role;
 import com.hormigo.david.parkingmanager.user.domain.User;
 import com.hormigo.david.parkingmanager.user.domain.UserRepository;
@@ -45,6 +48,10 @@ public class CucumberSteps extends CucumberConfiguration {
     private UserRepository mockedRepository;
     @InjectMocks
     private UserService mockedUserService = mock(UserService.class);
+    @MockBean
+    private DrawRepository mockedDrawRepository;
+    @InjectMocks
+    private DrawService mockedDrawService = mock(DrawService.class);
     @Value("${local.server.port}")
     private int port;
     private static ChromeDriver driver;
@@ -93,6 +100,9 @@ public class CucumberSteps extends CucumberConfiguration {
             case "creación de usuarios":
                 endPoint = "/newUser";
             break;
+            case "creacion de sorteos":
+                endPoint = "/newDraw";
+            break;
             default:
                 break;
         }
@@ -104,7 +114,6 @@ public class CucumberSteps extends CucumberConfiguration {
         WebElement inputField = driver.findElement(By.id(getFieldIdFromName(fieldName)));
         inputField.sendKeys(fieldValue);
     }
-
     @Cuando("el usuario hace click sobre el botón de {}")
     public void clickButton(String buttonName) {
         String buttonId = "";
@@ -118,6 +127,8 @@ public class CucumberSteps extends CucumberConfiguration {
             case "crear usuario":
                 buttonId = "user-create-button-submit";
                 break;
+            case "crear sorteo":
+                buttonId = "draw-button-submit";
             default:
                 break;
         }
@@ -126,7 +137,6 @@ public class CucumberSteps extends CucumberConfiguration {
 
     @Entonces("esta en la pagina de {}")
     public void isInPage(String pageName) {
-
         assertTrue(driver.getCurrentUrl().equals(getUrlFromPageName(pageName)));
     }
 
@@ -134,13 +144,16 @@ public class CucumberSteps extends CucumberConfiguration {
     public void checkUserWasSaved(){
         verify(mockedRepository.save(any(User.class)));
     }
+    @Entonces("se ha persistido el sorteo en la base de datos")
+    public void checkDrawWasSaved(){
+        verify(mockedDrawRepository.save(any(Draw.class)));
+    }
 
     @Entonces("se muestra un campo de {}")
     public void fieldIsDisplayed(String fieldName){
         String fieldId = getFieldIdFromName(fieldName);
         String currentUrl = driver.getCurrentUrl();
         WebElement field = driver.findElement(By.id(fieldId));
-        
         assertTrue(field.isDisplayed());
     }
 
@@ -159,6 +172,9 @@ public class CucumberSteps extends CucumberConfiguration {
             case "segundo apellido":
             fieldId = "user-create-field-lastname2";
             break;
+            case "descripcion":
+            fieldId = "draw-label-description";
+            break;
             default:
                 break;
         }
@@ -167,5 +183,4 @@ public class CucumberSteps extends CucumberConfiguration {
     private String getUrlFromEndPoint(String endpoint) {
         return "http://localhost:" + port + endpoint;
     }
-
 }
